@@ -22,18 +22,18 @@ class mcb_TableOfContent {
    private function makeToc(&$content)
    {
       //get the headings
-      if(preg_match_all('/<h[1-'.$this->depth.']{1,1}[^>]*>.*?<\/h[1-'.$this->depth.']>/s',$content,$headers) === false)
+      if(preg_match_all('/<h[3-'.$this->depth.']{1,1}[^>]*>.*?<\/h[1-'.$this->depth.']>/s',$content,$headers) === false)
          return "";
 
       //create the toc
       $heads = implode("\n",$headers[0]);
       $heads = preg_replace('/<a.+?\/a>/','',$heads);
-      $heads = preg_replace('/<h([1-6]) id="?/','<li class="toc$1"><a href="#',$heads);
-      $heads = preg_replace('/<\/h[1-6]>/','</a></li>',$heads);
+      $heads = preg_replace('/<h([3-6]) id="?/','<li class="toc$1"><a class="skip" href="#',$heads);
+      $heads = preg_replace('/<\/h[3-6]>/','</a></li>',$heads);
 
       $cap = $this->caption =='' ? "" :  '<p id="toc-header">'.$this->caption.'</p>';
 
-      return '<div id="toc">'.$cap.'<ul>'.$heads.'</ul></div>';
+      return '<div id="toc"><ul><li>Inhoudstafel</li></ul>'.$cap.'<ul>'.$heads.'</ul></div>';
    }
 
    public function config_loaded(&$settings)
@@ -71,9 +71,8 @@ class mcb_TableOfContent {
       foreach($nodes as $i => $sort) {
             if (isset($sort->tagName) && $sort->tagName !== '' && $sort->getAttribute('id') === "") {
                ++$id;
-               $sort->setAttribute('id', "mcb_toc_head$id");
-               $sort->setAttribute('class', "skip");
-               $sort->setAttribute('data-goto', "[id='mcb_toc_head$id']");
+                  $sort->setAttribute('id', "mcb_toc_head$id");
+                  $sort->setAttribute('data-goto', "[id='mcb_toc_head$id']");
             }
       }
 
