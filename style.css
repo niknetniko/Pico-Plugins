@@ -2,9 +2,7 @@
 #toc-header{display: inline;padding: 0;font-size: 100%;font-weight: bold;}
 #toc-nav{float: right;font-size: 12px;padding-right: 1.5em;padding-left: 0.5em;}
 #toc ul{list-style: none; margin-left: 0; padding-left: 0; text-align: left;}
-.toc1{}
-.toc2{margin-left: 1em;}
-.toc3{margin-left: 2em;}
-.toc4{margin-left: 3em;}
-.toc5{margin-left: 4em;}
-.toc6{margin-left: 5em;}
+.toc3{margin-left: 1em;}
+.toc4{margin-left: 2em;}
+.toc5{margin-left: 3em;}
+.toc6{margin-left: 4em;}
