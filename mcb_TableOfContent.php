@@ -13,10 +13,8 @@ class mcb_TableOfContent {
    // default settings
    private $depth = 3;
    private $min_headers = 3;
-   private $top_txt = 'Top';
    private $caption = '';
    private $anchor = false;
-   private $top_link;
    // internal
    private $toc = '';
    private $xpQuery;
@@ -42,17 +40,13 @@ class mcb_TableOfContent {
    {
       if(isset($settings['mcb_toc_depth'      ])) $this->depth       = &$settings['mcb_toc_depth'];
       if(isset($settings['mcb_toc_min_headers'])) $this->min_headers = &$settings['mcb_toc_min_headers'];
-      if(isset($settings['mcb_toc_top_txt'    ])) $this->top_txt     = &$settings['mcb_toc_top_txt'];
       if(isset($settings['mcb_toc_caption'    ])) $this->caption     = &$settings['mcb_toc_caption'];
       if(isset($settings['mcb_toc_anchor'     ])) $this->anchor      = &$settings['mcb_toc_anchor'];
-      if(isset($settings['top_link'           ])) $this->top_link    = &$settings['top_link'];
 
       for ($i=1; $i <= $this->depth; $i++) {
          $this->xpQuery[] = "//h$i";
       }
       $this->xpQuery = join("|", $this->xpQuery);
-
-      $this->top_link = '<a href="#top" id="toc-nav">'.$this->top_txt.'</a>';
    }
 
    public function after_parse_content(&$content)
@@ -64,7 +58,7 @@ class mcb_TableOfContent {
       // document doesn't already contain one:
       //
       // http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
-      $html = DOMDocument::loadHTML('<?xml encoding="utf-8" ?>' . $content);
+      $html = @DOMDocument::loadHTML('<?xml encoding="utf-8" ?>' . $content);
       $xp = new DOMXPath($html);
 
       $nodes =$xp->query($this->xpQuery);
@@ -74,28 +68,13 @@ class mcb_TableOfContent {
 
       // add missing id's to the h tags
       $id = 0;
-      foreach($nodes as $i => $sort)
-      {
-          if (isset($sort->tagName) && $sort->tagName !== '')
-          {
-             if($sort->getAttribute('id') === "")
-             {
-                ++$id;
-                $sort->setAttribute('id', "mcb_toc_head$id");
-             }
-             $a = $html->createElement('a', $this->top_txt);
-             $a->setAttribute('href', '#top');
-             $a->setAttribute('id', 'toc-nav');
-             $sort->appendChild($a);
-          }
-      }
-      // add top anchor
-      if($this->anchor)
-      {
-         $body = $xp->query("//body/node()")->item(0);
-         $a = $html->createElement('a');
-         $a->setAttribute('name', 'top');
-         $body->parentNode->insertBefore($a, $body);
+      foreach($nodes as $i => $sort) {
+            if (isset($sort->tagName) && $sort->tagName !== '' && $sort->getAttribute('id') === "") {
+               ++$id;
+               $sort->setAttribute('id', "mcb_toc_head$id");
+               $sort->setAttribute('class', "skip");
+               $sort->setAttribute('data-goto', "[id='mcb_toc_head$id']");
+            }
       }
 
       $content = preg_replace(
@@ -110,13 +89,5 @@ class mcb_TableOfContent {
    public function before_render(&$twig_vars, &$twig)
    {
       $twig_vars['mcb_toc'] = $this->toc;
-      $twig_vars['mcb_toc_top'] = $this->anchor ? "" : '<a id="top"></a>';
-      $twig_vars['mcb_top_link'] = $this->top_link;
    }
-
-   /* debug
-   public function after_render(&$output)
-   {
-      $output = $output . "<pre style=\"background-color:white;\">".htmlentities(print_r($this,1))."</pre>";
-   }*/
 }
