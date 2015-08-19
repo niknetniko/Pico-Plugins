@@ -1,3 +1,6 @@
+Note: this is a repo for a personal project and should not be used by others.
+
+
 Table Of Contents
 ======================================================================
 
